@@ -1,15 +1,30 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import FilterBar from './components/FilterBar';
 import SummaryCards from './components/SummaryCards';
 import TransactionForm from './components/TransactionForm';
 import TransactionList from './components/TransactionList';
 import { useTransactions } from './hooks/useTransactions';
+import { DEFAULT_FILTERS, type Filters } from './types/filters';
 import type { Transaction, TransactionFormData } from './types/transaction';
+import { computeAggregations } from './utils/aggregations';
+import { applyFilters } from './utils/filters';
 
 export default function App() {
   const { transactions, addTransaction, deleteTransaction, editTransaction } =
     useTransactions();
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null);
+  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+
+  const filteredTransactions = useMemo(
+    () => applyFilters(transactions, filters),
+    [transactions, filters]
+  );
+
+  const aggregations = useMemo(
+    () => computeAggregations(filteredTransactions),
+    [filteredTransactions]
+  );
 
   function handleSubmit(data: TransactionFormData) {
     if (editingTransaction) {
@@ -32,7 +47,7 @@ export default function App() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        <SummaryCards transactions={transactions} />
+        <SummaryCards aggregations={aggregations} />
 
         <TransactionForm
           onSubmit={handleSubmit}
@@ -40,8 +55,10 @@ export default function App() {
           onCancelEdit={() => setEditingTransaction(null)}
         />
 
+        <FilterBar filters={filters} onChange={setFilters} />
+
         <TransactionList
-          transactions={transactions}
+          transactions={filteredTransactions}
           onDelete={deleteTransaction}
           onEdit={setEditingTransaction}
         />

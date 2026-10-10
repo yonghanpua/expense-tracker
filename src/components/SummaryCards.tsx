@@ -1,20 +1,12 @@
-import type { Transaction } from '../types/transaction';
+import type { Aggregations } from '../utils/aggregations';
 import { formatCurrency } from '../utils/format';
 
 interface SummaryCardsProps {
-  transactions: Transaction[];
+  aggregations: Aggregations;
 }
 
-export default function SummaryCards({ transactions }: SummaryCardsProps) {
-  const totalIncome = transactions
-    .filter((t) => t.type === 'income')
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  const totalExpense = transactions
-    .filter((t) => t.type === 'expense')
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  const balance = totalIncome - totalExpense;
+export default function SummaryCards({ aggregations }: SummaryCardsProps) {
+  const { totalIncome, totalExpense, balance } = aggregations;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
