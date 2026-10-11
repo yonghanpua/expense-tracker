@@ -48,6 +48,18 @@ export function useTransactions() {
     );
   }, []);
 
+  const importTransactions = useCallback((incoming: Transaction[]) => {
+    setTransactions((prev) => {
+      const existingIds = new Set(prev.map((t) => t.id));
+      const newOnes = incoming.filter((t) => !existingIds.has(t.id));
+      return [...newOnes, ...prev];
+    });
+  }, []);
+
+  const clearTransactions = useCallback(() => {
+    setTransactions([]);
+  }, []);
+
   const sortedTransactions = [...transactions].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
@@ -57,5 +69,7 @@ export function useTransactions() {
     addTransaction,
     deleteTransaction,
     editTransaction,
+    importTransactions,
+    clearTransactions,
   };
 }

@@ -14,11 +14,17 @@ No test framework is configured yet.
 
 ## Architecture
 
-Personal expense tracker SPA — React 19, TypeScript 6, Tailwind CSS v4 (via `@tailwindcss/vite` plugin), Vite 8. No backend; all data persists in localStorage under the key `expense-tracker-transactions`.
+Personal expense tracker SPA — React 19, TypeScript 6, Tailwind CSS v4 (via `@tailwindcss/vite` plugin), Vite 8. No backend; all data persists in localStorage under the keys `expense-tracker-transactions` and `expense-tracker-budgets`.
+
+### Pages
+
+Two-page layout controlled by state in `App.tsx` (no router):
+- **Dashboard:** FilterBar, SummaryCards, InsightCards, Charts (CategoryChart + TrendChart), BudgetOverview (read-only), TransactionForm, TransactionList
+- **Settings:** BudgetPanel (full editor), DataManagement (import/export/clear)
 
 ### Data flow
 
-`useTransactions` hook owns all transaction state. It initializes from localStorage on mount and syncs back on every change via `useEffect`. Components receive transactions and CRUD callbacks through props from `App.tsx` — no context or external state library.
+`useTransactions` hook owns all transaction state (CRUD + import + clear). `useBudgets` hook owns budget state. Both initialize from localStorage on mount and sync back on every change via `useEffect`. Components receive data and callbacks through props from `App.tsx` — no context or external state library.
 
 ### Key conventions
 
