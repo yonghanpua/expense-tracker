@@ -1,8 +1,8 @@
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 import type { BudgetMap, BudgetStatus } from '../types/budget';
 import { getBudgetStatus } from '../types/budget';
 import type { Category } from '../types/transaction';
 import { CATEGORIES } from '../types/transaction';
-import { formatCurrency } from '../utils/format';
 
 interface BudgetOverviewProps {
   budgets: BudgetMap;
@@ -25,6 +25,8 @@ export default function BudgetOverview({
   categorySpending,
   onNavigateToSettings,
 }: BudgetOverviewProps) {
+  const formatCurrency = useFormatCurrency();
+
   const activeBudgets = EXPENSE_CATEGORIES.filter(
     (c) => budgets[c] !== undefined && budgets[c] > 0
   );

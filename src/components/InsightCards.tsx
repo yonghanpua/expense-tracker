@@ -1,5 +1,5 @@
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 import type { Transaction } from '../types/transaction';
-import { formatCurrency } from '../utils/format';
 
 interface InsightCardsProps {
   transactions: Transaction[];
@@ -11,7 +11,10 @@ interface Insight {
   detail?: string;
 }
 
-function computeInsights(transactions: Transaction[]): Insight[] {
+function computeInsights(
+  transactions: Transaction[],
+  formatCurrency: (n: number) => string
+): Insight[] {
   if (transactions.length === 0) return [];
 
   const expenses = transactions.filter((t) => t.type === 'expense');
@@ -76,7 +79,8 @@ function computeInsights(transactions: Transaction[]): Insight[] {
 }
 
 export default function InsightCards({ transactions }: InsightCardsProps) {
-  const insights = computeInsights(transactions);
+  const formatCurrency = useFormatCurrency();
+  const insights = computeInsights(transactions, formatCurrency);
 
   if (insights.length === 0) return null;
 

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import BudgetOverview from './components/BudgetOverview';
 import BudgetPanel from './components/BudgetPanel';
 import CategoryChart from './components/CategoryChart';
+import CurrencySelector from './components/CurrencySelector';
 import DataManagement from './components/DataManagement';
 import FilterBar from './components/FilterBar';
 import InsightCards from './components/InsightCards';
@@ -11,7 +12,9 @@ import ToastContainer from './components/Toast';
 import TransactionForm from './components/TransactionForm';
 import TransactionList from './components/TransactionList';
 import TrendChart from './components/TrendChart';
+import { CurrencyProvider } from './contexts/CurrencyContext';
 import { useBudgets } from './hooks/useBudgets';
+import { useCurrency } from './hooks/useCurrency';
 import { useRecurring } from './hooks/useRecurring';
 import { useToast } from './hooks/useToast';
 import { useTransactions } from './hooks/useTransactions';
@@ -31,6 +34,7 @@ export default function App() {
     importTransactions,
     clearTransactions,
   } = useTransactions();
+  const { currency, setCurrency } = useCurrency();
   const { budgets, setBudget, removeBudget } = useBudgets();
   const { rules, addRule, removeRule, toggleRule } =
     useRecurring(importTransactions);
@@ -106,6 +110,7 @@ export default function App() {
   }
 
   return (
+    <CurrencyProvider value={currency}>
     <div className="min-h-screen bg-gray-950">
       <header className="bg-gray-900 border-b border-gray-800">
         <div className="max-w-5xl mx-auto px-4">
@@ -196,6 +201,11 @@ export default function App() {
               onRemoveBudget={handleRemoveBudget}
             />
 
+            <CurrencySelector
+              currency={currency}
+              onChange={setCurrency}
+            />
+
             <DataManagement
               transactions={transactions}
               onImport={handleImport}
@@ -207,5 +217,6 @@ export default function App() {
 
       <ToastContainer toasts={toasts} onDismiss={dismiss} />
     </div>
+    </CurrencyProvider>
   );
 }

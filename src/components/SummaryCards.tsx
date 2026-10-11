@@ -1,11 +1,12 @@
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 import type { Aggregations } from '../utils/aggregations';
-import { formatCurrency } from '../utils/format';
 
 interface SummaryCardsProps {
   aggregations: Aggregations;
 }
 
 export default function SummaryCards({ aggregations }: SummaryCardsProps) {
+  const formatCurrency = useFormatCurrency();
   const { totalIncome, totalExpense, balance } = aggregations;
 
   return (

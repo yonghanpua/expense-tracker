@@ -1,9 +1,9 @@
 import { useState } from 'react';
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 import type { Frequency, RecurringRule } from '../types/recurring';
 import { FREQUENCIES } from '../types/recurring';
 import type { Category, PaymentMethod } from '../types/transaction';
 import { CATEGORIES, PAYMENT_METHODS } from '../types/transaction';
-import { formatCurrency } from '../utils/format';
 
 interface RecurringPanelProps {
   rules: RecurringRule[];
@@ -42,6 +42,7 @@ export default function RecurringPanel({
   onRemove,
   onToggle,
 }: RecurringPanelProps) {
+  const formatCurrency = useFormatCurrency();
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<FormState>(initialForm);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);

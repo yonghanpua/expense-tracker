@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 import type { Transaction } from '../types/transaction';
-import { formatCurrency, formatDate } from '../utils/format';
+import { formatDate } from '../utils/format';
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -15,6 +16,7 @@ export default function TransactionList({
   onDelete,
   onEdit,
 }: TransactionListProps) {
+  const formatCurrency = useFormatCurrency();
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);

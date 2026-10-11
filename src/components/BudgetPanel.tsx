@@ -1,9 +1,9 @@
 import { useState } from 'react';
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 import type { BudgetMap, BudgetStatus } from '../types/budget';
 import { getBudgetStatus } from '../types/budget';
 import type { Category } from '../types/transaction';
 import { CATEGORIES } from '../types/transaction';
-import { formatCurrency } from '../utils/format';
 
 interface BudgetPanelProps {
   budgets: BudgetMap;
@@ -43,6 +43,7 @@ export default function BudgetPanel({
   onSetBudget,
   onRemoveBudget,
 }: BudgetPanelProps) {
+  const formatCurrency = useFormatCurrency();
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [editValue, setEditValue] = useState('');
 

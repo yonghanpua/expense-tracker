@@ -8,9 +8,9 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 import type { TimePeriod } from '../types/filters';
 import type { Transaction } from '../types/transaction';
-import { formatCurrency } from '../utils/format';
 
 interface TrendChartProps {
   transactions: Transaction[];
@@ -111,6 +111,7 @@ export default function TrendChart({
   transactions,
   timePeriod,
 }: TrendChartProps) {
+  const formatCurrency = useFormatCurrency();
   const groupBy =
     timePeriod === 'all' || timePeriod === 'custom' ? 'monthly' : timePeriod;
 

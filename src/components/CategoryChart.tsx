@@ -7,15 +7,16 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 import type { Category } from '../types/transaction';
 import { CATEGORY_COLORS } from '../utils/chartColors';
-import { formatCurrency } from '../utils/format';
 
 interface CategoryChartProps {
   categoryTotals: Map<Category, number>;
 }
 
 export default function CategoryChart({ categoryTotals }: CategoryChartProps) {
+  const formatCurrency = useFormatCurrency();
   const data = useMemo(() => {
     const entries: { name: string; value: number }[] = [];
     categoryTotals.forEach((value, key) => {
