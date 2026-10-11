@@ -4,14 +4,16 @@ import BudgetPanel from './components/BudgetPanel';
 import CategoryChart from './components/CategoryChart';
 import DataManagement from './components/DataManagement';
 import FilterBar from './components/FilterBar';
-import RecurringPanel from './components/RecurringPanel';
 import InsightCards from './components/InsightCards';
+import RecurringPanel from './components/RecurringPanel';
 import SummaryCards from './components/SummaryCards';
+import ToastContainer from './components/Toast';
 import TransactionForm from './components/TransactionForm';
 import TransactionList from './components/TransactionList';
 import TrendChart from './components/TrendChart';
 import { useBudgets } from './hooks/useBudgets';
 import { useRecurring } from './hooks/useRecurring';
+import { useToast } from './hooks/useToast';
 import { useTransactions } from './hooks/useTransactions';
 import { DEFAULT_FILTERS, type Filters } from './types/filters';
 import type { Transaction, TransactionFormData } from './types/transaction';
@@ -32,6 +34,7 @@ export default function App() {
   const { budgets, setBudget, removeBudget } = useBudgets();
   const { rules, addRule, removeRule, toggleRule } =
     useRecurring(importTransactions);
+  const { toasts, toast, dismiss } = useToast();
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
@@ -60,9 +63,46 @@ export default function App() {
     if (editingTransaction) {
       editTransaction(editingTransaction.id, data);
       setEditingTransaction(null);
+      toast('Transaction updated');
     } else {
       addTransaction(data);
+      toast('Transaction added');
     }
+  }
+
+  function handleDelete(id: string) {
+    deleteTransaction(id);
+    toast('Transaction deleted');
+  }
+
+  function handleImport(imported: Transaction[]) {
+    importTransactions(imported);
+    toast(`${imported.length} transaction${imported.length !== 1 ? 's' : ''} imported`);
+  }
+
+  function handleClearAll() {
+    clearTransactions();
+    toast('All transactions cleared', 'info');
+  }
+
+  function handleSetBudget(category: Parameters<typeof setBudget>[0], limit: number) {
+    setBudget(category, limit);
+    toast(`Budget set for ${category}`);
+  }
+
+  function handleRemoveBudget(category: Parameters<typeof removeBudget>[0]) {
+    removeBudget(category);
+    toast(`Budget removed for ${category}`, 'info');
+  }
+
+  function handleAddRule(rule: Parameters<typeof addRule>[0]) {
+    addRule(rule);
+    toast('Recurring rule added');
+  }
+
+  function handleRemoveRule(id: string) {
+    removeRule(id);
+    toast('Recurring rule removed', 'info');
   }
 
   return (
@@ -134,7 +174,7 @@ export default function App() {
 
             <TransactionList
               transactions={filteredTransactions}
-              onDelete={deleteTransaction}
+              onDelete={handleDelete}
               onEdit={setEditingTransaction}
             />
           </>
@@ -144,26 +184,28 @@ export default function App() {
           <>
             <RecurringPanel
               rules={rules}
-              onAdd={addRule}
-              onRemove={removeRule}
+              onAdd={handleAddRule}
+              onRemove={handleRemoveRule}
               onToggle={toggleRule}
             />
 
             <BudgetPanel
               budgets={budgets}
               categorySpending={currentMonthSpending}
-              onSetBudget={setBudget}
-              onRemoveBudget={removeBudget}
+              onSetBudget={handleSetBudget}
+              onRemoveBudget={handleRemoveBudget}
             />
 
             <DataManagement
               transactions={transactions}
-              onImport={importTransactions}
-              onClearAll={clearTransactions}
+              onImport={handleImport}
+              onClearAll={handleClearAll}
             />
           </>
         )}
       </main>
+
+      <ToastContainer toasts={toasts} onDismiss={dismiss} />
     </div>
   );
 }
