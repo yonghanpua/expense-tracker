@@ -2,10 +2,10 @@ import { useMemo, useState } from 'react';
 import BudgetPanel from './components/BudgetPanel';
 import CategoryChart from './components/CategoryChart';
 import FilterBar from './components/FilterBar';
-import MonthlyTrendChart from './components/MonthlyTrendChart';
 import SummaryCards from './components/SummaryCards';
 import TransactionForm from './components/TransactionForm';
 import TransactionList from './components/TransactionList';
+import TrendChart from './components/TrendChart';
 import { useBudgets } from './hooks/useBudgets';
 import { useTransactions } from './hooks/useTransactions';
 import { DEFAULT_FILTERS, type Filters } from './types/filters';
@@ -61,11 +61,16 @@ export default function App() {
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-6 space-y-6">
+        <FilterBar filters={filters} onChange={setFilters} />
+
         <SummaryCards aggregations={aggregations} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <CategoryChart categoryTotals={aggregations.categoryTotals} />
-          <MonthlyTrendChart transactions={transactions} />
+          <TrendChart
+            transactions={filteredTransactions}
+            timePeriod={filters.timePeriod}
+          />
         </div>
 
         <BudgetPanel
@@ -80,8 +85,6 @@ export default function App() {
           editingTransaction={editingTransaction}
           onCancelEdit={() => setEditingTransaction(null)}
         />
-
-        <FilterBar filters={filters} onChange={setFilters} />
 
         <TransactionList
           transactions={filteredTransactions}

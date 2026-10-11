@@ -1,10 +1,18 @@
 import type { Category, TransactionType } from './transaction';
 
-export type DatePreset = 'all' | 'this-month' | 'last-30' | 'custom';
+export type TimePeriod =
+  | 'daily'
+  | 'weekly'
+  | 'fortnightly'
+  | 'monthly'
+  | 'yearly'
+  | 'all'
+  | 'custom';
 
 export interface Filters {
   search: string;
-  datePreset: DatePreset;
+  timePeriod: TimePeriod;
+  offset: number; // 0 = current period, -1 = previous, 1 = next, etc.
   dateFrom: string;
   dateTo: string;
   category: Category | 'all';
@@ -13,7 +21,8 @@ export interface Filters {
 
 export const DEFAULT_FILTERS: Filters = {
   search: '',
-  datePreset: 'all',
+  timePeriod: 'monthly',
+  offset: 0,
   dateFrom: '',
   dateTo: '',
   category: 'all',

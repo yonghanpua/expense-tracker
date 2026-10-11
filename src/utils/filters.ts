@@ -1,37 +1,6 @@
 import type { Filters } from '../types/filters';
 import type { Transaction } from '../types/transaction';
-
-function getDateRange(filters: Filters): { from: string; to: string } | null {
-  if (filters.datePreset === 'all') return null;
-
-  const today = new Date();
-
-  if (filters.datePreset === 'this-month') {
-    const from = new Date(today.getFullYear(), today.getMonth(), 1);
-    return {
-      from: from.toISOString().split('T')[0],
-      to: today.toISOString().split('T')[0],
-    };
-  }
-
-  if (filters.datePreset === 'last-30') {
-    const from = new Date(today);
-    from.setDate(from.getDate() - 30);
-    return {
-      from: from.toISOString().split('T')[0],
-      to: today.toISOString().split('T')[0],
-    };
-  }
-
-  if (filters.dateFrom || filters.dateTo) {
-    return {
-      from: filters.dateFrom || '1900-01-01',
-      to: filters.dateTo || '2999-12-31',
-    };
-  }
-
-  return null;
-}
+import { getDateRange } from './dateRanges';
 
 export function applyFilters(
   transactions: Transaction[],
@@ -52,9 +21,17 @@ export function applyFilters(
     result = result.filter((t) => t.category === filters.category);
   }
 
-  const range = getDateRange(filters);
-  if (range) {
-    result = result.filter((t) => t.date >= range.from && t.date <= range.to);
+  if (filters.timePeriod === 'custom') {
+    const from = filters.dateFrom || '1900-01-01';
+    const to = filters.dateTo || '2999-12-31';
+    result = result.filter((t) => t.date >= from && t.date <= to);
+  } else {
+    const range = getDateRange(filters.timePeriod, filters.offset);
+    if (range) {
+      result = result.filter(
+        (t) => t.date >= range.from && t.date <= range.to
+      );
+    }
   }
 
   return result;
