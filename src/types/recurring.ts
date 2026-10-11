@@ -18,6 +18,7 @@ export interface RecurringRule {
   paymentMethod: PaymentMethod;
   frequency: Frequency;
   nextDate: string;
+  endDate: string;
   enabled: boolean;
   createdAt: string;
 }

@@ -34,8 +34,15 @@ export function useRecurring(addTransactions: (txns: Transaction[]) => void) {
       if (!rule.enabled) return rule;
 
       let { nextDate } = rule;
+      const end = rule.endDate || '';
       let count = 0;
+      let expired = false;
+
       while (nextDate <= today && count < 365) {
+        if (end && nextDate > end) {
+          expired = true;
+          break;
+        }
         generated.push({
           id: uuidv4(),
           date: nextDate,
@@ -51,7 +58,11 @@ export function useRecurring(addTransactions: (txns: Transaction[]) => void) {
         updated = true;
       }
 
-      return { ...rule, nextDate };
+      if (!expired && end && nextDate > end) {
+        expired = true;
+      }
+
+      return { ...rule, nextDate, enabled: expired ? false : rule.enabled };
     });
 
     if (updated) {
