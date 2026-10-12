@@ -42,6 +42,7 @@ export default function App() {
   const { toasts, toast, dismiss } = useToast();
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null);
+  const [showForm, setShowForm] = useState(false);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [page, setPage] = useState<Page>('dashboard');
 
@@ -73,6 +74,17 @@ export default function App() {
       addTransaction(data);
       toast('Transaction added');
     }
+    setShowForm(false);
+  }
+
+  function handleEdit(transaction: Transaction) {
+    setEditingTransaction(transaction);
+    setShowForm(true);
+  }
+
+  function handleCloseForm() {
+    setShowForm(false);
+    setEditingTransaction(null);
   }
 
   function handleDelete(id: string) {
@@ -172,16 +184,10 @@ export default function App() {
               onNavigateToSettings={() => setPage('settings')}
             />
 
-            <TransactionForm
-              onSubmit={handleSubmit}
-              editingTransaction={editingTransaction}
-              onCancelEdit={() => setEditingTransaction(null)}
-            />
-
             <TransactionList
               transactions={filteredTransactions}
               onDelete={handleDelete}
-              onEdit={setEditingTransaction}
+              onEdit={handleEdit}
             />
           </>
         )}
@@ -217,6 +223,26 @@ export default function App() {
           </>
         )}
       </main>
+
+      {page === 'dashboard' && (
+        <button
+          onClick={() => setShowForm(true)}
+          className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 active:scale-95 transition-all"
+          aria-label="Add transaction"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+        </button>
+      )}
+
+      {showForm && (
+        <TransactionForm
+          onSubmit={handleSubmit}
+          editingTransaction={editingTransaction}
+          onClose={handleCloseForm}
+        />
+      )}
 
       <ToastContainer toasts={toasts} onDismiss={dismiss} />
     </div>
