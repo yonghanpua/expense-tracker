@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { loadFromStorage, saveToStorage } from '../utils/storage';
 
 const STORAGE_KEY = 'expense-tracker-currency';
@@ -30,11 +31,37 @@ export function useCurrency() {
   });
 
   useEffect(() => {
+    if (!isSupabaseConfigured()) return;
+    supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'currency')
+      .single()
+      .then(({ data, error }) => {
+        if (!error && data) {
+          const code = data.value as CurrencyCode;
+          setCurrencyState(code);
+          saveToStorage(code, STORAGE_KEY);
+        }
+      });
+  }, []);
+
+  useEffect(() => {
     saveToStorage(currency, STORAGE_KEY);
   }, [currency]);
 
   const setCurrency = useCallback((code: CurrencyCode) => {
     setCurrencyState(code);
+
+    if (isSupabaseConfigured()) {
+      supabase
+        .from('settings')
+        .upsert({ key: 'currency', value: code })
+        .select()
+        .then(({ error }) => {
+          if (error) console.error('[Supabase] upsert currency failed:', error);
+        });
+    }
   }, []);
 
   return { currency, setCurrency };

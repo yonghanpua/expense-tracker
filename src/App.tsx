@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import BudgetOverview from './components/BudgetOverview';
 import BudgetPanel from './components/BudgetPanel';
 import CategoryChart from './components/CategoryChart';
+import ConnectionStatus from './components/ConnectionStatus';
 import CurrencySelector from './components/CurrencySelector';
 import DataManagement from './components/DataManagement';
 import FilterBar from './components/FilterBar';
@@ -205,6 +206,8 @@ export default function App() {
               currency={currency}
               onChange={setCurrency}
             />
+
+            <ConnectionStatus />
 
             <DataManagement
               transactions={transactions}

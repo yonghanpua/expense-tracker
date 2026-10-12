@@ -14,17 +14,17 @@ No test framework is configured yet.
 
 ## Architecture
 
-Personal expense tracker SPA — React 19, TypeScript 6, Tailwind CSS v4 (via `@tailwindcss/vite` plugin), Vite 8. No backend; all data persists in localStorage under the keys `expense-tracker-transactions` and `expense-tracker-budgets`.
+Personal expense tracker SPA — React 19, TypeScript 6, Tailwind CSS v4 (via `@tailwindcss/vite` plugin), Vite 8. Data persists to Supabase (PostgreSQL) with localStorage as a fast cache for instant loading.
 
 ### Pages
 
 Two-page layout controlled by state in `App.tsx` (no router):
 - **Dashboard:** FilterBar, SummaryCards, InsightCards, Charts (CategoryChart + TrendChart), BudgetOverview (read-only), TransactionForm, TransactionList
-- **Settings:** BudgetPanel (full editor), DataManagement (import/export/clear)
+- **Settings:** RecurringPanel, BudgetPanel (full editor), CurrencySelector, DataManagement (import/export/clear)
 
 ### Data flow
 
-`useTransactions` hook owns all transaction state (CRUD + import + clear). `useBudgets` hook owns budget state. Both initialize from localStorage on mount and sync back on every change via `useEffect`. Components receive data and callbacks through props from `App.tsx` — no context or external state library.
+`useTransactions` hook owns all transaction state (CRUD + import + clear). `useBudgets` hook owns budget state. `useRecurring` manages recurring rules. `useCurrency` manages the display currency. All hooks load from localStorage first (instant), then fetch from Supabase in the background; writes go to both. If Supabase is not configured (no `.env`), the app falls back to localStorage only. Components receive data and callbacks through props from `App.tsx`. Currency is provided via `CurrencyContext`.
 
 ### Key conventions
 
